@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Prediction System</title>
+    <style>
+        /* General Body Styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            text-align: center;
+            padding: 20px;
+            color: white;
+        }
+
+        /* Glassmorphism Container */
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            margin: auto;
+            color: white;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .container:hover {
+            transform: scale(1.02);
+        }
+
+        /* Two-column Layout */
+        .form-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            text-align: left;
+        }
+
+        /* Left Side - Disease Dropdown */
+        .left-side {
+            width: 40%;
+        }
+
+        /* Right Side - Dynamic Input Fields */
+        .right-side {
+            width: 60%;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Labels */
+        label {
+            font-size: 14px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Input & Select Fields */
+        select, input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        select:focus, input:focus {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.4);
+        }
+
+        select::placeholder, input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Button Styling */
+        button {
+            background: linear-gradient(135deg, #28a745, #1e8e3e);
+            color: white;
+            border: none;
+            padding: 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #218838, #166533);
+            transform: scale(1.05);
+            box-shadow: 0px 5px 15px rgba(0, 255, 128, 0.4);
+        }
+
+        /* Prediction Result Styling */
+        .result {
+            margin-top: 15px;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            display: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result.disease {
+            background: linear-gradient(135deg, #ff4c4c, #b22222);
+            color: white;
+            box-shadow: 0px 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .result.no-disease {
+            background: linear-gradient(135deg, #4caf50, #2e8b57);
+            color: white;
+            box-shadow: 0px 5px 15px rgba(0, 255, 128, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .form-container {
+                flex-direction: column;
+            }
+
+            .left-side, .right-side {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Disease Prediction System</h2>
+
+        <div class="form-container">
+            <!-- Left Side: Disease Selection -->
+            <div class="left-side">
+                <label for="disease">Select Disease:</label>
+                <select id="disease" onchange="updateFields()">
+                    <option value="heart">Heart Disease</option>
+                    <option value="diabetes">Diabetes</option>
+                    <option value="cancer">Cancer</option>
+                </select>
+            </div>
+
+            <!-- Right Side: Dynamic Inputs -->
+            <div class="right-side" id="dynamic-fields">
+                
+            </div>
+        </div>
+
+        <button onclick="predict()">Predict</button>
+
+        <div class="result" id="prediction-result"></div>
+    </div>
+
+    <script>
+        function updateFields() {
+            const dynamicFieldsContainer = document.getElementById('dynamic-fields');
+            const disease = document.getElementById('disease').value;
+        
+            // Clear the previous dynamic fields
+            dynamicFieldsContainer.innerHTML = '';
+        
+            // Define fields for each disease
+            let fields = '';
+        
+            if (disease === 'heart') {
+                fields = `
+                    <div class="field-group">
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" name="age" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="sex">Sex (0 = Female, 1 = Male):</label>
+                        <input type="number" id="sex" name="sex" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="cp">Chest Pain Type:</label>
+                        <input type="number" id="cp" name="cp" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="trestbps">Resting Blood Pressure:</label>
+                        <input type="number" id="trestbps" name="trestbps" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="chol">Cholesterol:</label>
+                        <input type="number" id="chol" name="chol" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="fbs">Fasting Blood Sugar:</label>
+                        <input type="number" id="fbs" name="fbs" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="restecg">Resting Electrocardiographic Results:</label>
+                        <input type="number" id="restecg" name="restecg" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="thalach">Maximum Heart Rate Achieved:</label>
+                        <input type="number" id="thalach" name="thalach" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="exang">Exercise Induced Angina:</label>
+                        <input type="number" id="exang" name="exang" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="oldpeak">ST Depression Induced by Exercise:</label>
+                        <input type="number" id="oldpeak" name="oldpeak" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="slope">Slope of the Peak Exercise ST Segment:</label>
+                        <input type="number" id="slope" name="slope" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="ca">Number of Major Vessels Colored by Fluoroscopy:</label>
+                        <input type="number" id="ca" name="ca" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="thal">Thalassemia:</label>
+                        <input type="number" id="thal" name="thal" required><br><br>
+                    </div>
+                `;
+            } else if (disease === 'diabetes') {
+                fields = `
+                    <div class="field-group">
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" name="age" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="bmi">BMI:</label>
+                        <input type="number" id="bmi" name="bmi" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="glucose">Glucose Level:</label>
+                        <input type="number" id="glucose" name="glucose" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="insulin">Insulin Level:</label>
+                        <input type="number" id="insulin" name="insulin" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="homa">HOMA Index:</label>
+                        <input type="number" id="homa" name="homa" required><br><br>
+                    </div>
+                `;
+            } else if (disease === 'liver') {
+                fields = `
+                    <div class="field-group">
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" name="age" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="sex">Sex (0 = Female, 1 = Male):</label>
+                        <input type="number" id="sex" name="sex" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="total_bilirubin">Total Bilirubin:</label>
+                        <input type="number" id="total_bilirubin" name="total_bilirubin" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="direct_bilirubin">Direct Bilirubin:</label>
+                        <input type="number" id="direct_bilirubin" name="direct_bilirubin" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="alkaline_phosphatase">Alkaline Phosphatase:</label>
+                        <input type="number" id="alkaline_phosphatase" name="alkaline_phosphatase" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="sgpt">SGPT:</label>
+                        <input type="number" id="sgpt" name="sgpt" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="sgot">SGOT:</label>
+                        <input type="number" id="sgot" name="sgot" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="albumin">Albumin:</label>
+                        <input type="number" id="albumin" name="albumin" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="protime">Prothrombin Time:</label>
+                        <input type="number" id="protime" name="protime" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="histology">Histology (0 = No, 1 = Yes):</label>
+                        <input type="number" id="histology" name="histology" required><br><br>
+                    </div>
+                `;
+            }
+        
+            dynamicFieldsContainer.innerHTML = fields;
+        }
+        
+
+        function simulatePrediction(event) {
+            event.preventDefault();
+    
+            // Collect data from the form
+            const formData = new FormData(document.getElementById('prediction-form'));
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+    
+            // Get the selected disease type from the dropdown
+            const disease = document.getElementById('disease').value;
+    
+            // Send data to Flask API using fetch, including the disease type
+            fetch(`/predict/${disease}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data), // Send data as JSON
+            })
+            .then(response => response.json())  // Expect JSON response from Flask
+            .then(result => {
+                const predictionResult = document.getElementById('prediction-result');
+                predictionResult.textContent = `Prediction: ${result.prediction}`;  // Display prediction result
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        // Initialize the form when the page loads
+        window.addEventListener('DOMContentLoaded', updateForm);
+    </script>
+</body>
+</html>
