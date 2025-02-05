@@ -28,10 +28,6 @@
             transition: all 0.3s ease-in-out;
         }
 
-        .container:hover {
-            transform: scale(1.02);
-        }
-
         /* Two-column Layout */
         .form-container {
             display: flex;
@@ -50,9 +46,10 @@
         .right-side {
             width: 60%;
             background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
+            padding: 40px;
             border-radius: 10px;
             transition: all 0.3s ease-in-out;
+            height:fit-content;
         }
 
         /* Labels */
@@ -96,16 +93,11 @@
             border-radius: 8px;
             font-size: 16px;
             transition: all 0.3s ease;
-            width: 100%;
+            width: 50%;
             margin-top: 10px;
             font-weight: bold;
         }
 
-        button:hover {
-            background: linear-gradient(135deg, #218838, #166533);
-            transform: scale(1.05);
-            box-shadow: 0px 5px 15px rgba(0, 255, 128, 0.4);
-        }
 
         /* Prediction Result Styling */
         .result {
@@ -117,19 +109,9 @@
             display: none;
             text-transform: uppercase;
             letter-spacing: 1px;
+            display : contents;
         }
-
-        .result.disease {
-            background: linear-gradient(135deg, #ff4c4c, #b22222);
-            color: white;
-            box-shadow: 0px 5px 15px rgba(255, 0, 0, 0.3);
-        }
-
-        .result.no-disease {
-            background: linear-gradient(135deg, #4caf50, #2e8b57);
-            color: white;
-            box-shadow: 0px 5px 15px rgba(0, 255, 128, 0.3);
-        }
+        
 
         /* Responsive Design */
         @media (max-width: 600px) {
@@ -151,26 +133,27 @@
             <!-- Left Side: Disease Selection -->
             <div class="left-side">
                 <label for="disease">Select Disease:</label>
-                <select id="disease" onchange="updateFields()">
+                <select id="disease" onchange="updateForm()">
                     <option value="heart">Heart Disease</option>
                     <option value="diabetes">Diabetes</option>
-                    <option value="cancer">Cancer</option>
+                    <option value="liver">Liver</option>
                 </select>
             </div>
 
-            <!-- Right Side: Dynamic Inputs -->
-            <div class="right-side" id="dynamic-fields">
-                
-            </div>
         </div>
-
-        <button onclick="predict()">Predict</button>
+           <!-- Right Side: Dynamic Inputs -->
+           <form id="prediction-form">
+            <div class="right-side" id="dynamic-fields"></div>
+            <button type="button" onclick="simulatePrediction(event)">Predict</button>
+       
+        
 
         <div class="result" id="prediction-result"></div>
+    </form>
     </div>
 
     <script>
-        function updateFields() {
+        function updateForm() {
             const dynamicFieldsContainer = document.getElementById('dynamic-fields');
             const disease = document.getElementById('disease').value;
         
@@ -238,24 +221,36 @@
             } else if (disease === 'diabetes') {
                 fields = `
                     <div class="field-group">
-                        <label for="age">Age:</label>
-                        <input type="number" id="age" name="age" required><br><br>
+                        <label for="Pregnancies">Pregnancies:</label>
+                        <input type="number" id="Pregnancies" name="Pregnancies" required><br><br>
                     </div>
                     <div class="field-group">
-                        <label for="bmi">BMI:</label>
-                        <input type="number" id="bmi" name="bmi" required><br><br>
+                        <label for="Glucose">Glucose Level:</label>
+                        <input type="number" id="Glucose" name="Glucose" required><br><br>
                     </div>
                     <div class="field-group">
-                        <label for="glucose">Glucose Level:</label>
-                        <input type="number" id="glucose" name="glucose" required><br><br>
+                        <label for="BloodPressure">BloodPressure:</label>
+                        <input type="number" id="BloodPressure" name="BloodPressure" required><br><br>
+                    </div>
+                    <div class="field-group">
+                        <label for="SkinThickness">SkinThickness:</label>
+                        <input type="number" id="SkinThickness" name="SkinThickness" required><br><br>
                     </div>
                     <div class="field-group">
                         <label for="insulin">Insulin Level:</label>
                         <input type="number" id="insulin" name="insulin" required><br><br>
                     </div>
                     <div class="field-group">
-                        <label for="homa">HOMA Index:</label>
-                        <input type="number" id="homa" name="homa" required><br><br>
+                        <label for="BMI">BMI:</label>
+                        <input type="number" id="BMI" name="BMI" required><br><br>
+                    </div>
+                     <div class="field-group">
+                        <label for="DiabetesPedigreeFunction">DiabetesPedigreeFunction:</label>
+                        <input type="number" id="DiabetesPedigreeFunction" name="DiabetesPedigreeFunction" required><br><br>
+                    </div>
+                     <div class="field-group">
+                        <label for="Age">Age:</label>
+                        <input type="number" id="Age" name="Age" required><br><br>
                     </div>
                 `;
             } else if (disease === 'liver') {
@@ -281,24 +276,24 @@
                         <input type="number" id="alkaline_phosphatase" name="alkaline_phosphatase" required><br><br>
                     </div>
                     <div class="field-group">
-                        <label for="sgpt">SGPT:</label>
-                        <input type="number" id="sgpt" name="sgpt" required><br><br>
+                        <label for="Alamine_Aminotransferase">Alamine_Aminotransferase:</label>
+                        <input type="number" id="Alamine_Aminotransferase" name="Alamine_Aminotransferase" required><br><br>
                     </div>
                     <div class="field-group">
-                        <label for="sgot">SGOT:</label>
-                        <input type="number" id="sgot" name="sgot" required><br><br>
+                        <label for="Aspartate_Aminotransferase">Aspartate_Aminotransferase:</label>
+                        <input type="number" id="Aspartate_Aminotransferase" name="Aspartate_Aminotransferase" required><br><br>
                     </div>
                     <div class="field-group">
-                        <label for="albumin">Albumin:</label>
-                        <input type="number" id="albumin" name="albumin" required><br><br>
+                        <label for="Total_Protien">Total_Protien Time:</label>
+                        <input type="number" id="Total_Protien" name="Total_Protien" required><br><br>
                     </div>
                     <div class="field-group">
-                        <label for="protime">Prothrombin Time:</label>
-                        <input type="number" id="protime" name="protime" required><br><br>
+                        <label for="Albumin">Albumin:</label>
+                        <input type="number" id="Albumin" name="Albumin" required><br><br>
                     </div>
                     <div class="field-group">
-                        <label for="histology">Histology (0 = No, 1 = Yes):</label>
-                        <input type="number" id="histology" name="histology" required><br><br>
+                        <label for="Albumin_and_Globulin_Ratio">Albumin_and_Globulin_Ratio:</label>
+                        <input type="number" id="Albumin_and_Globulin_Ratio" name="Albumin_and_Globulin_Ratio" required><br><br>
                     </div>
                 `;
             }
@@ -309,6 +304,7 @@
 
         function simulatePrediction(event) {
             event.preventDefault();
+            console.log('Predict button clicked!');
     
             // Collect data from the form
             const formData = new FormData(document.getElementById('prediction-form'));
@@ -316,9 +312,12 @@
             formData.forEach((value, key) => {
                 data[key] = value;
             });
+
+            console.log("Form Data:", data);
     
             // Get the selected disease type from the dropdown
             const disease = document.getElementById('disease').value;
+            console.log("Selected Disease:", disease);
     
             // Send data to Flask API using fetch, including the disease type
             fetch(`/predict/${disease}`, {
@@ -331,7 +330,7 @@
             .then(response => response.json())  // Expect JSON response from Flask
             .then(result => {
                 const predictionResult = document.getElementById('prediction-result');
-                predictionResult.textContent = `Prediction: ${result.prediction}`;  // Display prediction result
+                predictionResult.textContent = `${result.prediction}`;  // Display prediction result
             })
             .catch(error => {
                 console.error('Error:', error);
