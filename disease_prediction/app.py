@@ -2,8 +2,15 @@ from flask import Flask, request, jsonify, render_template
 import pickle
 import numpy as np
 import pandas as pd
+import openai
+import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
+
+# Load environment variables
+load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Load the trained models
 with open("models/heart_disease_model.pkl", "rb") as file:
@@ -48,6 +55,28 @@ def predict_liver_disease():
     prediction = liver_model.predict(features)
     result = "disease" if prediction[0] == 1 else "no-disease"
     return jsonify({"prediction": result})
+
+# Chatbot route
+@app.route('/chatbot', methods=['POST'])
+def chatbot():
+    user_message = request.json.get("message")
+    
+    if not user_message:
+        return jsonify({"reply": "Please ask a health-related question."})
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a medical assistant. Provide health-related advice."},
+                {"role": "user", "content": user_message}
+            ]
+        )
+        bot_reply = response["choices"][0]["message"]["content"]
+    except Exception as e:
+        bot_reply = "Sorry, I am unable to process your request at the moment."
+
+    return jsonify({"reply": bot_reply})
 
 if __name__ == "__main__":
     app.run(debug=True)
