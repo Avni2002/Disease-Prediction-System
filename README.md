@@ -55,6 +55,6 @@ This project is open-source under the [MIT License](LICENSE).
 For queries or contributions, reach out at **your-meherrituparna@gmail.com**.
 
 🔗 **GitHub Repository**: [Multiple Disease Prediction System](https://github.com/your-username/multiple-disease-prediction)
-```
+
 
 This version is short, clean, and easy to read. Let me know if you need any modifications! 🚀
